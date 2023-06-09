@@ -905,11 +905,16 @@ void SceneTree::_process_group(ProcessGroup *p_group, bool p_physics) {
 		return;
 	}
 
-	bool &node_order_dirty = p_physics ? p_group->physics_node_order_dirty : p_group->node_order_dirty;
-
-	if (node_order_dirty) {
-		nodes.sort_custom<Node::ComparatorWithPhysicsPriority>();
-		node_order_dirty = false;
+	if (p_physics) {
+		if (p_group->physics_node_order_dirty) {
+			nodes.sort_custom<Node::ComparatorWithPhysicsPriority>();
+			p_group->physics_node_order_dirty = false;
+		}
+	} else {
+		if (p_group->node_order_dirty) {
+			nodes.sort_custom<Node::ComparatorWithPriority>();
+			p_group->node_order_dirty = false;
+		}
 	}
 
 	// Make a copy, so if nodes are added/removed from process, this does not break
@@ -1395,7 +1400,8 @@ void SceneTree::_change_scene(Node *p_to) {
 	if (p_to) {
 		current_scene = p_to;
 		root->add_child(p_to);
-		root->update_mouse_cursor_shape();
+		// Update display for cursor instantly.
+		root->update_mouse_cursor_state();
 	}
 }
 
