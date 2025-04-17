@@ -1565,6 +1565,18 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 	function = nullptr;
 	_dump_node_code(shader, 1, r_gen_code, *p_actions, actions, false);
 
+	print_line("--------------------------------------------------------------------------------------");
+	print_line("\n**uniforms:\n" + r_gen_code.uniforms);
+	print_line("\n**vertex_globals:\n" + r_gen_code.stage_globals[ShaderCompiler::STAGE_VERTEX]);
+	print_line("\n**fragment_globals:\n" + r_gen_code.stage_globals[ShaderCompiler::STAGE_FRAGMENT]);
+	print_line("\n**compute_globals:\n" + r_gen_code.stage_globals[ShaderCompiler::STAGE_COMPUTE]);
+
+	HashMap<String, String>::Iterator el = r_gen_code.code.begin();
+	while (el) {
+		print_line("\n**code " + el->key + ":\n" + el->value);
+		++el;
+	}
+
 	return OK;
 }
 
